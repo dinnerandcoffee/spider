@@ -21,19 +21,19 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK 36
-        run: |
-          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
       - name: Set up Gradle 9.5
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.0'
 
-      - name: Unpack project and set SDK 36
+      - name: Reconstruct and verify project archive
         run: |
-          unzip -q TrainStopMeter_v1_github_ready.zip
-          sed -i 's/compileSdk = 37/compileSdk = 36/' TrainStopMeter_v1/app/build.gradle.kts
-          sed -i 's/targetSdk = 37/targetSdk = 36/' TrainStopMeter_v1/app/build.gradle.kts
+          cat tsm_parts/part00.txt tsm_parts/mid00.txt tsm_parts/mid01.txt tsm_parts/mid02.txt tsm_parts/mid03.txt tsm_parts/part02.txt > TrainStopMeter_v1_sdk36.b64
+          base64 -d TrainStopMeter_v1_sdk36.b64 > TrainStopMeter_v1_sdk36.zip
+          echo "f0353fc079643a58cedaeef1373658ecbbc23c5449f22bc4481cc118f09257cd  TrainStopMeter_v1_sdk36.zip" | sha256sum -c -
+          unzip -q TrainStopMeter_v1_sdk36.zip
 
       - name: Build debug APK
         working-directory: TrainStopMeter_v1
