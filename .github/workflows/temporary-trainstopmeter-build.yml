@@ -35,15 +35,18 @@ jobs:
           echo "f0353fc079643a58cedaeef1373658ecbbc23c5449f22bc4481cc118f09257cd  TrainStopMeter_v1_sdk36.zip" | sha256sum -c -
           unzip -q TrainStopMeter_v1_sdk36.zip
 
+      - name: Apply v1.1 administrator entry fix
+        run: python3 trainstopmeter_patch_v11.py
+
       - name: Build debug APK
         working-directory: TrainStopMeter_v1
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Rename APK
-        run: cp TrainStopMeter_v1/app/build/outputs/apk/debug/app-debug.apk TrainStopMeter-v1-debug.apk
+        run: cp TrainStopMeter_v1/app/build/outputs/apk/debug/app-debug.apk TrainStopMeter-v1.1-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TrainStopMeter-v1-APK
-          path: TrainStopMeter-v1-debug.apk
+          name: TrainStopMeter-v1.1-APK
+          path: TrainStopMeter-v1.1-debug.apk
