@@ -1,6 +1,8 @@
 name: Build TrainStopMeter APK
 
 on:
+  pull_request:
+    branches: [ master ]
   push:
     branches: [ trainstopmeter-build ]
   workflow_dispatch:
