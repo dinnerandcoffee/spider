@@ -1,0 +1,48 @@
+name: Build TrainStopMeter APK
+
+on:
+  push:
+    branches: [ trainstopmeter-build ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 37
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-37" "build-tools;37.0.0" "platform-tools"
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Unpack TrainStopMeter project
+        run: unzip -q TrainStopMeter_v1_github_ready.zip
+
+      - name: Build debug APK
+        working-directory: TrainStopMeter_v1
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Rename APK
+        run: cp TrainStopMeter_v1/app/build/outputs/apk/debug/app-debug.apk TrainStopMeter-v1-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrainStopMeter-v1-APK
+          path: TrainStopMeter-v1-debug.apk
